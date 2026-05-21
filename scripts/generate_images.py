@@ -22,58 +22,88 @@ ROOT = Path(__file__).parent.parent
 COMFYUI_URL = "http://127.0.0.1:8188"
 
 STYLE_SUFFIX = (
-    "minimalist flat illustration, warm cream beige background, "
-    "navy dark blue accents, muted gold highlights, "
-    "professional business concept art, "
-    "no text no words no letters, clean composition, "
-    "soft natural lighting, subtle shadows"
+    "flat illustration, warm beige background, navy and gold accents, "
+    "clean composition, no text no words, soft lighting"
 )
 
+SCENE_TYPE_RULES = {
+    "intro": "cinematic wide shot, dramatic lighting, single figure silhouette",
+    "chapter": "centered subject, clear focal point, storytelling composition",
+    "outro": "bold graphic design layout, centered icon elements, invitation feeling",
+}
+
 SCENE_PROMPT_MAP = {
-    "intro": "finance professional analyzing market data on large screen, confident business person silhouette",
-    "outro": "subscribe button and notification bell concept, modern social media engagement illustration",
+    "intro": "wise elderly investor silhouette standing before a massive glowing stock market display, confident pose, dramatic backlight",
+    "outro": "large subscribe button icon with notification bell, warm inviting colors, hand cursor clicking, social media engagement",
+}
+
+SCENE_TYPE_RULES = {
+    "intro": "cinematic wide shot, dramatic lighting, single figure silhouette",
+    "chapter": "centered subject, clear focal point, storytelling composition",
+    "outro": "bold graphic design layout, centered icon elements, invitation feeling",
 }
 
 KEYWORD_VISUAL_MAP = {
-    "cash vault money": "giant bank vault filled with gold bars and stacked cash bundles, wealthy treasury concept",
-    "market warning signal": "red warning alert symbol with downward stock market arrow, financial risk concept",
-    "stock market crash": "falling stock chart with concerned investor silhouette, market downturn concept",
-    "investment strategy": "chess pieces on board with financial chart overlay, strategic planning concept",
-    "savings": "piggy bank with coins growing into a tree, savings growth concept",
-    "debt": "heavy chain wrapped around credit cards, financial burden concept",
-    "crypto": "golden bitcoin coin floating above digital network, cryptocurrency concept",
-    "real estate": "modern buildings with rising value arrow, property investment concept",
-    "retirement": "peaceful beach scene with financial planning symbols, retirement planning concept",
-    "gold": "shiny gold bars and coins arrangement, precious metals investment concept",
-    "recession": "empty shopping cart in front of closed storefront, economic downturn concept",
-    "inflation": "balloon being inflated with money symbols, rising prices concept",
-    "dividend": "money tree dropping coins into collection basket, passive income concept",
-    "portfolio": "balanced scale holding different asset classes, diversification concept",
-    "interest rate": "upward arrow next to percentage symbol and bank building, rate change concept",
-    "budget": "calculator and notebook with organized financial plan, budgeting concept",
-    "tax": "government building with tax forms and calculator, taxation concept",
-    "insurance": "umbrella shielding family from rain, protection concept",
-    "startup": "rocket launching from laptop screen, entrepreneurship concept",
-    "warren buffett": "wise elderly investor silhouette with chart and glasses, legendary investor concept",
+    "cash vault money": "elderly investor in suit standing proudly before an enormous open bank vault overflowing with gold bars and stacked dollar bills, historic record-breaking wealth, confident posture",
+    "market warning signal": "giant red exclamation mark hovering over a falling stock chart on a digital screen, investor silhouette looking concerned in foreground, urgent alert mood",
+    "stock market crash": "skyscrapers with stock ticker numbers falling like rain, worried investor covering face, dramatic downward arrows in sky, dark stormy atmosphere",
+    "investment strategy": "elderly chess grandmaster pondering next move on a chessboard where pieces are shaped like buildings and gold coins, strategic deep thought",
+    "savings": "young person carefully placing coins into a glowing piggy bank that is sprouting into a golden tree, steady growth, hopeful future",
+    "debt": "person crushed under a massive ball and chain made of tangled credit cards and loan papers, heavy burden, stressed posture",
+    "crypto": "futuristic floating golden bitcoin coin pulsing with energy above a glowing digital circuit board network, modern technology meets finance",
+    "real estate": "person holding a glowing key in front of modern city buildings growing taller with upward arrows, property ladder concept, prosperous cityscape",
+    "retirement": "happy older couple relaxing on a serene beach at sunset with a small treasure chest beside them and financial chart dissolving into the horizon",
+    "gold": "hands holding shimmering gold bars that reflect warm light, surrounded by scattered gold coins on a velvet surface, precious metals treasure",
+    "recession": "abandoned shopping mall with empty storefronts and a single person pushing an empty cart through a desolate corridor, economic emptiness",
+    "inflation": "helium balloon shaped like a dollar sign being inflated until it stretches and nearly bursts, rising prices visual metaphor, tension",
+    "dividend": "mature money tree dropping golden coins into a collection basket held by a smiling person, passive income flowing steadily",
+    "portfolio": "balanced golden scale weighing different objects — a house, coins, a document, and a glowing orb — perfect harmony and diversification",
+    "interest rate": "bank building with a giant thermometer gauge showing percentage rising, person looking up at it with concern, rate hike impact",
+    "budget": "organized desk with a calculator, notebook with neat rows of numbers, and a small stack of coins, methodical financial planning",
+    "tax": "government capitol building casting a long shadow over a person holding a small stack of remaining money, taxation burden",
+    "insurance": "large golden umbrella shielding a family from falling storm clouds and rain, warm light underneath, safety and protection",
+    "startup": "entrepreneur launching a small rocket from a laptop screen, the rocket trailing golden sparkles upward, innovation and ambition",
+    "warren buffett": "distinguished elderly man with glasses and suit sitting at a desk with financial newspapers and a cherry coke, wise thoughtful expression, legendary investor portrait",
 }
 
 
+def _detect_scene_type(scene_id: str) -> str:
+    if scene_id == "intro":
+        return "intro"
+    elif scene_id == "outro":
+        return "outro"
+    else:
+        return "chapter"
+
+
 def build_image_prompt(scene_id: str, visual_desc: str, chapter: dict = None) -> str:
-    """Build an optimized prompt for image generation from script metadata."""
+    """Build a content-aware prompt from script metadata."""
     parts = []
 
-    # Use keyword-based visual if available
+    # 1. Scene-type composition rule
+    scene_type = _detect_scene_type(scene_id)
+    if scene_type in SCENE_TYPE_RULES:
+        parts.append(SCENE_TYPE_RULES[scene_type])
+
+    # 2. Subject — keyword > visual_desc > scene_map > fallback
     keyword = chapter.get("image_keyword", "") if chapter else ""
     if keyword and keyword.lower() in KEYWORD_VISUAL_MAP:
         parts.append(KEYWORD_VISUAL_MAP[keyword.lower()])
     elif visual_desc:
-        # Strip any existing style repetition from the visual description
         desc = visual_desc.replace("minimalist flat illustration", "").strip()
-        parts.append(desc)
+        if desc:
+            parts.append(desc)
     elif scene_id in SCENE_PROMPT_MAP:
         parts.append(SCENE_PROMPT_MAP[scene_id])
     else:
         parts.append("professional business concept illustration")
+
+    # 3. Enrich with key_points if available (adds story context)
+    if chapter:
+        key_points = chapter.get("key_points", [])
+        if key_points and not keyword:
+            topics = ", ".join(key_points[:2])
+            parts.append(f"illustrating: {topics}")
 
     parts.append(STYLE_SUFFIX)
     return ", ".join(parts)
