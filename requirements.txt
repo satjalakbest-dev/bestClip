@@ -1,0 +1,19 @@
+# bestClip Python Dependencies
+# Install: pip install -r requirements.txt
+
+# Core
+anthropic>=0.40.0         # Claude API (script generation)
+edge-tts>=6.1.12          # Thai TTS (free, no GPU)
+mutagen>=1.47.0            # Audio duration reading
+Pillow>=10.0.0             # Image placeholders / processing
+
+# Optional: F5-TTS Thai (requires RTX 3070+)
+# pip install f5-tts-th soundfile torch torchaudio
+
+# Optional: Google Gemini research
+# pip install google-generativeai
+
+# Utilities
+python-dotenv>=1.0.0       # .env file loading
+requests>=2.31.0           # HTTP (ComfyUI API)
+tqdm>=4.66.0               # Progress bars

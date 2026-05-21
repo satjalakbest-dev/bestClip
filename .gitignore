@@ -1,0 +1,46 @@
+# Environment
+.env
+*.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# Output (large files — don't commit)
+output/audio/
+output/images/
+output/final/
+output/subtitles/
+
+# Keep output structure
+!output/.gitkeep
+!output/audio/.gitkeep
+!output/images/.gitkeep
+!output/final/.gitkeep
+!output/subtitles/.gitkeep
+
+# Node
+node_modules/
+remotion/node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Models (large binary files)
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.gguf
+
+# ComfyUI
+ComfyUI/
+
+# Temp
+*.tmp
+output/final/tmp/
