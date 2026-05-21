@@ -1,0 +1,12 @@
+{
+  "active": true,
+  "iteration": 1,
+  "max_iterations": 100,
+  "started_at": "2026-05-21T05:11:21.152Z",
+  "prompt": "/oh-my-claudecode:ralph still no voice and image just change color background. becuase for prompt when gen ? please help to create system to gen prompt to getting match image. or this computer have gemini cli pro sub. can we using master prompt to gen image with gemini cli",
+  "session_id": "3b2eb02c-7ba0-458a-9fab-b3e25a5d2c17",
+  "project_path": "C:\\Programing\\PersonalAI\\Claude-desktop\\bestClip",
+  "linked_ultrawork": true,
+  "awaiting_confirmation": true,
+  "last_checked_at": "2026-05-21T05:11:21.152Z"
+}

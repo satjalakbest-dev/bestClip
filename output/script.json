@@ -1,0 +1,43 @@
+{
+  "title": "ทำไม Warren Buffett ถือเงินสด 12 ล้านล้าน",
+  "title_en": "Why Warren Buffett Holds $1.2 Trillion in Cash",
+  "topic": "Warren Buffett เงินสด",
+  "created_at": "2026-05-21",
+  "duration_estimate_minutes": 1,
+  "brand": {
+    "color_primary": "#1B5299",
+    "color_secondary": "#FFFFFF",
+    "channel_name": "Blue O'Clock"
+  },
+  "intro": {
+    "narration": "คุณเคยสงสัยไหมว่า ทำไมนักลงทุนที่เก่งที่สุดในโลก ถึงเก็บเงินสดไว้มหาศาล",
+    "visual_description": "dramatic silhouette of Warren Buffett looking at financial charts, warm lighting",
+    "duration_seconds": 6
+  },
+  "chapters": [
+    {
+      "id": 1,
+      "title": "เงินสดมหาศาล",
+      "timestamp_start": "00:06",
+      "narration": "เบิร์กไshire แฮทธาเวย์ บริษัทของวอร์เรน บัฟเฟตต์ ถือเงินสดสูงเป็นประวัติการณ์ ถึงหนึ่งจุดสองล้านล้านดอลลาร์สหรัฐ ตัวเลขนี้ไม่ใช่เรื่องบังเอิญ แต่เป็นสัญญาณที่สำคัญจากนักลงทุนระดับตำนาน",
+      "visual_description": "minimalist flat illustration of giant vault filled with gold bars and cash stacks, warm beige background, business concept art",
+      "image_keyword": "cash vault money",
+      "duration_seconds": 12,
+      "key_points": ["เบิร์กไshire ถือเงินสด 1.2 ล้านล้านดอลลาร์", "เป็นสถิติสูงสุดตลอดกาล"]
+    },
+    {
+      "id": 2,
+      "title": "สัญญาณเตือน",
+      "timestamp_start": "00:18",
+      "narration": "เมื่อบัฟเฟตต์เก็บเงินสด แปลว่าเขาไม่เห็นโอกาสลงทุนที่น่าสนใจในตลาดตอนนี้ นี่คือสัญญาณเตือนว่าตลาดหุ้นอาจประเมินค่าสูงเกินไปแล้ว",
+      "visual_description": "minimalist flat illustration of warning signal and stock market downturn arrow, warm beige background, business silhouettes",
+      "image_keyword": "market warning signal",
+      "duration_seconds": 10,
+      "key_points": ["ไม่เห็นโอกาสลงทุนที่น่าสนใจ", "ตลาดอาจประเมินค่าสูงเกินไป"]
+    }
+  ],
+  "outro": {
+    "narration": "ติดตามช่อง Blue O'Clock เพื่อไม่พลาดบทวิเคราะห์ดีๆ แบบนี้ กด Subscribe เลย",
+    "duration_seconds": 5
+  }
+}

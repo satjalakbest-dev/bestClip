@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm -f output/images/*.png output/images/manifest.json output/subtitles/* output/final/video_final*.mp4)",
+      "Bash(rm -rf output/final/tmp)",
+      "Bash(rm -f output/subtitles/*)",
+      "Bash(PYTHONIOENCODING=utf-8 python scripts/generate_subtitles.py --script output/script.json)"
+    ]
+  }
+}

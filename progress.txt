@@ -1,0 +1,52 @@
+# bestClip Ralph Progress
+
+## Session: 2026-05-21
+
+### Project Understanding
+- bestClip is a BlueOclock-style Thai finance YouTube video pipeline
+- Stack: Python scripts (research, script gen, TTS, images, subtitles, render) + FFmpeg + optional Remotion
+- System: Python 3.12, FFmpeg 8.0, Node.js 24.12 all available
+- All scripts are pre-written and functional
+
+### Completed Stories
+
+**US-001: Install Python dependencies** - PASS
+- edge-tts 7.2.8, mutagen 1.47.0, Pillow (pre-installed)
+- Note: Windows requires `PYTHONIOENCODING=utf-8` for emoji output
+
+**US-002: Create 30-second test script JSON** - PASS
+- Created output/script.json with intro + 2 chapters + outro
+- Total narration ~32 seconds, all Thai text
+- Bypassed Claude API (manual script for test purposes)
+
+**US-003: Generate Thai TTS audio** - PASS
+- 4 segments: intro (5.5s), ch_01 (11.9s), ch_02 (9.5s), outro (5.4s)
+- Voice: th-TH-NiwatNeural (Edge-TTS)
+
+**US-004: Generate placeholder images** - PASS
+- 4 placeholder images (1920x1080) using Pillow
+- ComfyUI not available for test (would need FLUX.1 model)
+
+**US-005: Generate SRT subtitles** - PASS
+- 10 SRT entries with real audio timing from manifest.json
+- Both SRT and VTT formats generated
+
+**US-006: Render final video** - PASS
+- output/final/video_final.mp4: 34.9s, 738KB, 1920x1080 h264+aac
+- Burned-in Thai subtitles working
+
+### Bugs Fixed
+
+1. **generate_images.py**: `SyntaxError: name 'COMFYUI_URL' used prior to global declaration`
+   - Fix: Moved `global COMFYUI_URL` to top of main() function
+
+2. **render_video.py**: FFmpeg input/output option ordering
+   - Fix: Restructured render_segment() to collect all inputs first, then outputs
+
+3. **render_video.py**: FFmpeg subtitle path on Windows
+   - Fix: Use os.path.relpath() + forward slashes to avoid drive-letter colon conflict with FFmpeg filter syntax
+
+### Files Changed
+- scripts/generate_images.py (global declaration fix)
+- scripts/render_video.py (FFmpeg ordering + Windows subtitle path fix)
+- output/script.json (new test script)

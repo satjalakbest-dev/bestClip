@@ -44,3 +44,6 @@ ComfyUI/
 # Temp
 *.tmp
 output/final/tmp/
+
+.omc
+.omc/

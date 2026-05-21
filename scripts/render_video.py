@@ -22,7 +22,6 @@ ROOT = Path(__file__).parent.parent
 VIDEO_WIDTH = 1920
 VIDEO_HEIGHT = 1080
 FPS = 30
-FONT_PATH = str(ROOT / "assets/fonts/NotoSansThaiUI-Regular.ttf")
 
 
 def check_ffmpeg():
@@ -118,46 +117,46 @@ def render_logo_intro(output_path: str, logo_path: str, duration: float = 3.0):
     subprocess.run(cmd, check=True, capture_output=True)
 
 
-def render_segment(seg: dict, output_path: str, chapter_title: str = ""):
+def render_segment(seg: dict, output_path: str):
     """Render single segment: image + audio with Ken Burns pan"""
     image = seg["image"]
     audio = seg["audio"]
     duration = seg["duration"]
 
+    inputs = []
+    outputs = []
+
     if not image:
-        print(f"   ⚠️  No image for {seg['id']} — using solid color")
-        cmd = ["ffmpeg", "-y",
-               "-f", "lavfi", "-i",
-               f"color=#F5F0E8:size={VIDEO_WIDTH}x{VIDEO_HEIGHT}:duration={duration}:rate={FPS}"]
+        print(f"   Warning: No image for {seg['id']} - using solid color")
+        inputs += ["-f", "lavfi", "-i",
+                    f"color=#F5F0E8:size={VIDEO_WIDTH}x{VIDEO_HEIGHT}:duration={duration}:rate={FPS}"]
+        outputs += ["-map", "0:v"]
     else:
-        # Ken Burns effect: gentle zoom + slight pan
         zoom_end = 1.05
-        cmd = ["ffmpeg", "-y",
-               "-loop", "1", "-i", image,
-               "-filter_complex",
-               f"[0:v]scale={VIDEO_WIDTH*2}:{VIDEO_HEIGHT*2},"
-               f"zoompan=z='min(zoom+0.0003,{zoom_end})':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
-               f":d={int(duration*FPS)}:s={VIDEO_WIDTH}x{VIDEO_HEIGHT}:fps={FPS}[v]",
-               "-map", "[v]"]
+        inputs += ["-loop", "1", "-i", image]
+        filter_complex = (
+            f"[0:v]scale={VIDEO_WIDTH*2}:{VIDEO_HEIGHT*2},"
+            f"zoompan=z='min(zoom+0.0003,{zoom_end})':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
+            f":d={int(duration*FPS)}:s={VIDEO_WIDTH}x{VIDEO_HEIGHT}:fps={FPS}[v]"
+        )
+        outputs += ["-filter_complex", filter_complex, "-map", "[v]"]
 
-    # Add audio
+    # Add audio input
     if audio and Path(audio).exists():
-        cmd += ["-i", audio, "-map", "1:a"]
+        inputs += ["-i", audio]
     else:
-        cmd += ["-f", "lavfi", "-i", f"anullsrc=r=44100:cl=stereo", "-map", "1:a"]
+        inputs += ["-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo"]
+    outputs += ["-map", "1:a"]
 
-    # Add chapter title overlay (bottom-left, first 2 seconds)
-    if chapter_title and Path(FONT_PATH).exists():
-        cmd[-1] = "tmp_v"  # temp workaround handled below
-
-    cmd += [
+    outputs += [
         "-c:v", "libx264", "-preset", "fast",
-        "-c:a", "aac", "-ar", "44100",
+        "-c:a", "aac", "-ar", "44100", "-b:a", "192k", "-ac", "2",
         "-t", str(duration),
         "-pix_fmt", "yuv420p",
         output_path
     ]
 
+    cmd = ["ffmpeg", "-y"] + inputs + outputs
     subprocess.run(cmd, check=True, capture_output=True)
 
 
@@ -184,13 +183,12 @@ def concatenate_segments(segment_files: list, output_path: str, srt_path: str = 
 
     # Burn subtitles
     if srt_path and Path(srt_path).exists():
-        font_option = f":fontfile={FONT_PATH}" if Path(FONT_PATH).exists() else ""
+        srt_for_ffmpeg = os.path.relpath(srt_path).replace("\\", "/")
         subtitle_filter = (
-            f"subtitles={srt_path}"
-            f"{font_option}"
-            f":force_style='FontSize=32,PrimaryColour=&HFFFFFF&,"
+            f"subtitles={srt_for_ffmpeg}"
+            f":force_style='FontSize=22,PrimaryColour=&HFFFFFF&,"
             f"OutlineColour=&H000000&,Outline=2,Shadow=1,"
-            f"Alignment=2,MarginV=50'"
+            f"Alignment=2,MarginV=60'"
         )
         cmd_subs = [
             "ffmpeg", "-y",
@@ -248,7 +246,7 @@ def main():
         print(f"   [{i+1}/{len(segments)}] {seg['id']} ({seg['duration']:.1f}s)")
         seg_video = str(tmp_dir / f"seg_{i+1:02d}_{seg['id']}.mp4")
         try:
-            render_segment(seg, seg_video, seg.get("title", ""))
+            render_segment(seg, seg_video)
             segment_files.append(seg_video)
         except subprocess.CalledProcessError as e:
             print(f"   ❌ Render failed: {e.stderr.decode()[-200:]}")

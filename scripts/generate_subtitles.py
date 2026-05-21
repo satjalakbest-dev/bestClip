@@ -26,7 +26,7 @@ def ms_to_srt_time(ms: float) -> str:
     return f"{hours:02d}:{minutes:02d}:{seconds:02d},{millis:03d}"
 
 
-def split_into_subtitle_lines(text: str, max_chars: int = 40) -> list:
+def split_into_subtitle_lines(text: str, max_chars: int = 50) -> list:
     """Split narration text into subtitle-sized chunks for Thai"""
     # Remove double spaces
     text = re.sub(r"\s+", " ", text).strip()
@@ -50,11 +50,11 @@ def split_into_subtitle_lines(text: str, max_chars: int = 40) -> list:
     if current:
         lines.append(current)
 
-    # Merge very short lines
+    # Merge very short lines (strict: combined length stays within max_chars)
     merged = []
     i = 0
     while i < len(lines):
-        if i + 1 < len(lines) and len(lines[i]) + len(lines[i+1]) + 1 <= max_chars * 1.5:
+        if i + 1 < len(lines) and len(lines[i]) + len(lines[i+1]) + 1 <= max_chars:
             merged.append(lines[i] + " " + lines[i+1])
             i += 2
         else:
@@ -91,7 +91,7 @@ def generate_srt(script: dict, audio_manifest: list = None) -> str:
         else:
             total_ms = (len(text) / CHARS_PER_SECOND) * 1000
 
-        lines = split_into_subtitle_lines(text, max_chars=42)
+        lines = split_into_subtitle_lines(text, max_chars=50)
         ms_per_line = total_ms / max(len(lines), 1)
 
         for line in lines:

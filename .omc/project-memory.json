@@ -1,0 +1,253 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1779337197222,
+  "projectRoot": "C:\\Programing\\PersonalAI\\Claude-desktop\\bestClip",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "Python",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "requirements.txt"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "react",
+        "version": "18.0.0",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "18.0.0",
+        "category": "frontend"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": "npm run start",
+    "scripts": {
+      "start": "cd remotion && npx remotion studio",
+      "render": "cd remotion && npx remotion render BlueOclockVideo",
+      "preview": "cd remotion && npx remotion studio --props='../output/script.json'"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "assets",
+      "scripts"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "assets": {
+      "path": "assets",
+      "purpose": "Static assets",
+      "fileCount": 0,
+      "lastAccessed": 1779337197199,
+      "keyFiles": []
+    },
+    "output": {
+      "path": "output",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1779337197200,
+      "keyFiles": []
+    },
+    "prompts": {
+      "path": "prompts",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1779337197207,
+      "keyFiles": []
+    },
+    "remotion": {
+      "path": "remotion",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1779337197208,
+      "keyFiles": []
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 6,
+      "lastAccessed": 1779337197208,
+      "keyFiles": [
+        "generate_audio.py",
+        "generate_images.py",
+        "generate_script.py",
+        "generate_subtitles.py",
+        "render_video.py"
+      ]
+    },
+    "workflow": {
+      "path": "workflow",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1779337197209,
+      "keyFiles": [
+        "pipeline.py"
+      ]
+    },
+    "remotion\\src": {
+      "path": "remotion\\src",
+      "purpose": "Source code",
+      "fileCount": 1,
+      "lastAccessed": 1779337197210,
+      "keyFiles": [
+        "Root.tsx"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "scripts\\render_video.py",
+      "accessCount": 19,
+      "lastAccessed": 1779340739838,
+      "type": "file"
+    },
+    {
+      "path": "scripts\\generate_subtitles.py",
+      "accessCount": 14,
+      "lastAccessed": 1779339979327,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 13,
+      "lastAccessed": 1779340010997,
+      "type": "directory"
+    },
+    {
+      "path": "scripts\\generate_images.py",
+      "accessCount": 11,
+      "lastAccessed": 1779340721658,
+      "type": "file"
+    },
+    {
+      "path": "output\\subtitles\\subtitles.srt",
+      "accessCount": 4,
+      "lastAccessed": 1779339979763,
+      "type": "file"
+    },
+    {
+      "path": "output\\script.json",
+      "accessCount": 4,
+      "lastAccessed": 1779340654414,
+      "type": "file"
+    },
+    {
+      "path": "progress.txt",
+      "accessCount": 3,
+      "lastAccessed": 1779337890251,
+      "type": "file"
+    },
+    {
+      "path": "scripts\\generate_audio.py",
+      "accessCount": 2,
+      "lastAccessed": 1779337927428,
+      "type": "file"
+    },
+    {
+      "path": "workflow\\pipeline.py",
+      "accessCount": 2,
+      "lastAccessed": 1779337928349,
+      "type": "file"
+    },
+    {
+      "path": "package.json",
+      "accessCount": 1,
+      "lastAccessed": 1779337288565,
+      "type": "file"
+    },
+    {
+      "path": "requirements.txt",
+      "accessCount": 1,
+      "lastAccessed": 1779337288747,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 1,
+      "lastAccessed": 1779337289554,
+      "type": "file"
+    },
+    {
+      "path": ".env.example",
+      "accessCount": 1,
+      "lastAccessed": 1779337289640,
+      "type": "file"
+    },
+    {
+      "path": "scripts\\research.py",
+      "accessCount": 1,
+      "lastAccessed": 1779337299109,
+      "type": "file"
+    },
+    {
+      "path": "scripts\\generate_script.py",
+      "accessCount": 1,
+      "lastAccessed": 1779337299418,
+      "type": "file"
+    },
+    {
+      "path": "remotion\\src\\Root.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1779337316280,
+      "type": "file"
+    },
+    {
+      "path": "remotion\\src\\compositions\\BlueOclockVideo.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1779337317399,
+      "type": "file"
+    },
+    {
+      "path": "remotion\\src\\compositions\\Components.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1779337317494,
+      "type": "file"
+    },
+    {
+      "path": "output\\audio\\manifest.json",
+      "accessCount": 1,
+      "lastAccessed": 1779337926605,
+      "type": "file"
+    },
+    {
+      "path": "output\\images\\manifest.json",
+      "accessCount": 1,
+      "lastAccessed": 1779337926696,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
