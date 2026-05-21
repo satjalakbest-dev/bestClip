@@ -12,7 +12,6 @@ Methods (tried in order):
 import argparse
 import json
 import random
-import subprocess
 import sys
 import time
 import urllib.parse
@@ -117,14 +116,31 @@ def generate_with_pollinations(prompt: str, output_path: str, scene_id: str) -> 
         print(f"   Pollinations error: {e}")
         return False
 
+def _gguf_workflow(prompt: str, seed: int) -> dict:
+    """ComfyUI workflow for FLUX GGUF (Q4_K_S, fits 8GB VRAM)"""
+    return {
+        "10": {"inputs": {"unet_name": "flux1-schnell-Q4_K_S.gguf"}, "class_type": "UnetLoaderGGUF"},
+        "11": {"inputs": {"clip_name1": "clip_l.safetensors", "clip_name2": "t5xxl_fp8_e4m3fn.safetensors"}, "class_type": "DualCLIPLoaderGGUF"},
+        "12": {"inputs": {"vae_name": "ae.safetensors"}, "class_type": "VAELoader"},
+        "6": {"inputs": {"text": prompt, "clip": ["11", 0]}, "class_type": "CLIPTextEncode"},
+        "27": {"inputs": {"width": 1920, "height": 1080, "batch_size": 1}, "class_type": "EmptySD3LatentImage"},
+        "31": {
+            "inputs": {
+                "model": ["10", 0], "conditioning": ["6", 0], "latent_image": ["27", 0],
+                "noise_seed": seed, "steps": 4, "cfg": 1.0,
+                "sampler_name": "euler", "scheduler": "simple", "denoise": 1.0
+            },
+            "class_type": "KSampler"
+        },
+        "8": {"inputs": {"samples": ["31", 0], "vae": ["12", 0]}, "class_type": "VAEDecode"},
+        "9": {"inputs": {"filename_prefix": "bestclip_scene", "images": ["8", 0]}, "class_type": "SaveImage"},
+    }
 
-def generate_with_comfyui(prompt: str, output_path: str, scene_id: str) -> bool:
-    """Generate image via ComfyUI FLUX.1-schnell"""
-    seed = random.randint(1, 99999999)
-    full_prompt = f"{prompt}, {STYLE_SUFFIX}"
 
-    workflow = {
-        "6": {"inputs": {"text": full_prompt, "clip": ["30", 1]}, "class_type": "CLIPTextEncode"},
+def _checkpoint_workflow(prompt: str, seed: int) -> dict:
+    """ComfyUI workflow for single fp8 checkpoint"""
+    return {
+        "6": {"inputs": {"text": prompt, "clip": ["30", 1]}, "class_type": "CLIPTextEncode"},
         "8": {"inputs": {"samples": ["31", 0], "vae": ["30", 2]}, "class_type": "VAEDecode"},
         "9": {"inputs": {"filename_prefix": "bestclip_scene", "images": ["8", 0]}, "class_type": "SaveImage"},
         "27": {"inputs": {"width": 1920, "height": 1080, "batch_size": 1}, "class_type": "EmptySD3LatentImage"},
@@ -138,6 +154,25 @@ def generate_with_comfyui(prompt: str, output_path: str, scene_id: str) -> bool:
             "class_type": "KSampler"
         }
     }
+
+
+def generate_with_comfyui(prompt: str, output_path: str, scene_id: str) -> bool:
+    """Generate image via ComfyUI FLUX.1-schnell (GGUF Q4_K_S for 8GB VRAM)"""
+    seed = random.randint(1, 99999999)
+    full_prompt = prompt
+
+    # GGUF workflow for RTX 3070 8GB (Q4_K_S ~6GB VRAM)
+    # Try GGUF first, fall back to checkpoint loader
+    gguf_unet = Path(ROOT / "../../ComfyUI/models/unet/flux1-schnell-Q4_K_S.gguf")
+    fp8_ckpt = Path(ROOT / "../../ComfyUI/models/checkpoints/flux1-schnell-fp8.safetensors")
+
+    if gguf_unet.exists():
+        workflow = _gguf_workflow(full_prompt, seed)
+    elif fp8_ckpt.exists():
+        workflow = _checkpoint_workflow(full_prompt, seed)
+    else:
+        print(f"   No ComfyUI model found (need GGUF or fp8 checkpoint)")
+        return False
 
     try:
         print(f"   ComfyUI: {scene_id}")
@@ -229,9 +264,9 @@ def main():
     if method == "auto":
         try:
             with urllib.request.urlopen(f"{COMFYUI_URL}/system_stats", timeout=3) as r:
-                comfyui_available = r.status == 200
-            print(f"ComfyUI: available at {COMFYUI_URL}")
-            method = "comfyui"
+                if r.status == 200:
+                    print(f"ComfyUI: available at {COMFYUI_URL}")
+                    method = "comfyui"
         except Exception:
             # Check if requests is available for Pollinations
             try:
@@ -247,7 +282,6 @@ def main():
 
     # Build scene list
     scenes = []
-    chapters_map = {}
 
     if "intro" in script:
         desc = script["intro"].get("visual_description", "")
@@ -257,7 +291,6 @@ def main():
         sid = f"ch_{ch['id']:02d}"
         desc = ch.get("visual_description", f"business concept {ch['title']}")
         scenes.append((sid, desc, ch))
-        chapters_map[sid] = ch
 
     if "outro" in script:
         desc = script["outro"].get("visual_description", "subscribe and notification bell concept")

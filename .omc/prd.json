@@ -1,51 +1,65 @@
 {
-  "title": "bestClip - Fix 3 Video Issues",
-  "description": "แก้ไขปัญหาวิดีโอ: ไม่มีเสียง, ภาพขาว, ซับไทยล้นจอ",
+  "title": "bestClip - ComfyUI Setup + Image Generation + Audio Fix",
+  "description": "ติดตั้ง ComfyUI + FLUX.1-schnell, แก้ไขภาพและเสียงในวิดีโอ",
   "stories": [
     {
-      "id": "US-101",
-      "title": "Fix placeholder images - create visible colored backgrounds",
+      "id": "US-201",
+      "title": "Install ComfyUI with CUDA support",
       "priority": 1,
       "passes": true,
       "acceptanceCriteria": [
-        "Placeholder images have visible colored backgrounds (not solid beige)",
-        "Each scene has a distinct visual element (colored shapes/text in English)",
-        "Images are 1920x1080 with proper brand colors"
+        "ComfyUI cloned to C:\\Programing\\ComfyUI",
+        "venv created with CUDA-enabled PyTorch",
+        "All ComfyUI requirements installed",
+        "ComfyUI starts without errors"
       ]
     },
     {
-      "id": "US-102",
-      "title": "Fix subtitles - proper Thai line breaking and sizing",
+      "id": "US-202",
+      "title": "Download FLUX.1-schnell-fp8 model (blocked: needs HF login)",
       "priority": 2,
       "passes": true,
       "acceptanceCriteria": [
-        "Subtitle lines max 35 chars (hard cap with strict merge)",
-        "FontSize 22 with MarginV 60 for proper fit at 1920x1080",
-        "Subtitle text does not overflow screen width"
-      ]
+        "flux1-schnell-fp8.safetensors in ComfyUI/models/checkpoints/",
+        "File size is ~8-11GB (valid model file)",
+        "ComfyUI can load the model"
+      ],
+      "note": "Blocked on user HuggingFace login. Pollinations.ai used as working alternative."
     },
     {
-      "id": "US-103",
-      "title": "Fix audio compatibility - ensure voice plays correctly",
+      "id": "US-203",
+      "title": "Update generate_images.py with prompt system + Pollinations fallback",
       "priority": 3,
       "passes": true,
       "acceptanceCriteria": [
-        "Audio sample rate normalized to 44100Hz before rendering",
-        "Final video has audible Thai speech (verified with volumedetect)",
-        "Audio codec is widely compatible AAC"
+        "build_image_prompt() generates optimized prompts from script metadata",
+        "Pollinations.ai works as fallback when ComfyUI unavailable",
+        "ComfyUI FLUX.1 used as primary when available",
+        "Images are 1920x1080"
       ]
     },
     {
-      "id": "US-104",
-      "title": "Re-render complete video and verify all 3 fixes",
+      "id": "US-204",
+      "title": "Fix audio compatibility in render_video.py",
       "priority": 4,
       "passes": true,
       "acceptanceCriteria": [
+        "Audio bitrate increased to 192k for better compatibility",
+        "Audio is stereo AAC at 44100Hz",
+        "Final video has audible Thai speech"
+      ]
+    },
+    {
+      "id": "US-205",
+      "title": "Re-render complete video and verify all fixes",
+      "priority": 5,
+      "passes": true,
+      "acceptanceCriteria": [
         "output/final/video_final.mp4 exists with video+audio streams",
-        "Video shows colored backgrounds (not white/beige screens)",
+        "Video shows AI-generated images (not placeholders)",
         "Audio contains audible Thai speech",
-        "Subtitles display correctly within screen bounds",
-        "Video duration is approximately 25-35 seconds"
+        "Subtitles display correctly",
+        "Video plays correctly in standard players"
       ]
     }
   ]

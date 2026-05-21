@@ -1,52 +1,56 @@
 # bestClip Ralph Progress
 
-## Session: 2026-05-21
+## Session: 2026-05-21 (Iteration 3)
 
-### Project Understanding
-- bestClip is a BlueOclock-style Thai finance YouTube video pipeline
-- Stack: Python scripts (research, script gen, TTS, images, subtitles, render) + FFmpeg + optional Remotion
-- System: Python 3.12, FFmpeg 8.0, Node.js 24.12 all available
-- All scripts are pre-written and functional
+### Task
+Fix "still no voice" + "image just color background" - implement proper AI image generation
 
 ### Completed Stories
 
-**US-001: Install Python dependencies** - PASS
-- edge-tts 7.2.8, mutagen 1.47.0, Pillow (pre-installed)
-- Note: Windows requires `PYTHONIOENCODING=utf-8` for emoji output
+**US-201: Install ComfyUI with CUDA** - PASS
+- Cloned ComfyUI to C:\Programing\ComfyUI
+- Created venv with PyTorch CUDA 12.8 (torch 2.8.0+cu128)
+- RTX 3070 8GB detected, CUDA verified working
+- All ComfyUI requirements installed
+- Created start.bat at C:\Programing\ComfyUI\start.bat
 
-**US-002: Create 30-second test script JSON** - PASS
-- Created output/script.json with intro + 2 chapters + outro
-- Total narration ~32 seconds, all Thai text
-- Bypassed Claude API (manual script for test purposes)
+**US-202: FLUX.1-schnell model** - DEFERRED
+- Download requires HuggingFace auth (gated model)
+- User needs to: 1) Accept license at HF, 2) Get token, 3) `hf auth login`
+- Can be completed later; Pollinations.ai works as alternative
 
-**US-003: Generate Thai TTS audio** - PASS
-- 4 segments: intro (5.5s), ch_01 (11.9s), ch_02 (9.5s), outro (5.4s)
-- Voice: th-TH-NiwatNeural (Edge-TTS)
+**US-203: Update generate_images.py** - PASS
+- Added build_image_prompt() with keyword-visual mapping system
+- Added SCENE_PROMPT_MAP for intro/outro defaults
+- Added KEYWORD_VISUAL_MAP for common finance topics
+- Added Pollinations.ai via requests library (free, no API key)
+- Images auto-resized to 1920x1080 with Pillow LANCZOS
+- ComfyUI remains primary when available
+- Method selection: auto (try ComfyUI first, fall back to Pollinations)
 
-**US-004: Generate placeholder images** - PASS
-- 4 placeholder images (1920x1080) using Pillow
-- ComfyUI not available for test (would need FLUX.1 model)
+**US-204: Fix audio compatibility** - PASS
+- Audio bitrate: 63 kb/s → 178 kb/s
+- Added -b:a 192k -ac 2 to render_video.py
+- Volume verified: -25.0 dB mean, -5.5 dB max (audible)
 
-**US-005: Generate SRT subtitles** - PASS
-- 10 SRT entries with real audio timing from manifest.json
-- Both SRT and VTT formats generated
-
-**US-006: Render final video** - PASS
-- output/final/video_final.mp4: 34.9s, 738KB, 1920x1080 h264+aac
+**US-205: Re-render video** - PASS
+- output/final/video_final.mp4: 32.4s, 3.9 MB, 1920x1080
+- Video: h264 832 kb/s, Audio: AAC stereo 178 kb/s
+- AI-generated images from Pollinations.ai (not placeholders)
 - Burned-in Thai subtitles working
-
-### Bugs Fixed
-
-1. **generate_images.py**: `SyntaxError: name 'COMFYUI_URL' used prior to global declaration`
-   - Fix: Moved `global COMFYUI_URL` to top of main() function
-
-2. **render_video.py**: FFmpeg input/output option ordering
-   - Fix: Restructured render_segment() to collect all inputs first, then outputs
-
-3. **render_video.py**: FFmpeg subtitle path on Windows
-   - Fix: Use os.path.relpath() + forward slashes to avoid drive-letter colon conflict with FFmpeg filter syntax
+- Audio present and audible
 
 ### Files Changed
-- scripts/generate_images.py (global declaration fix)
-- scripts/render_video.py (FFmpeg ordering + Windows subtitle path fix)
-- output/script.json (new test script)
+- scripts/generate_images.py (complete rewrite: Pollinations + prompt system)
+- scripts/render_video.py (audio bitrate fix: -b:a 192k -ac 2)
+- .omc/prd.json (updated for current iteration)
+
+### New Files Created
+- C:\Programing\ComfyUI\start.bat (ComfyUI startup script)
+
+### Architecture Notes
+- Pollinations.ai URL format: https://image.pollinations.ai/prompt/{encoded}?width=1344&height=768
+- Must use requests library (not urllib) - urllib gets 403
+- Images come as 1344x768, resized to 1920x1080 with LANCZOS
+- ComfyUI installed at C:\Programing\ComfyUI with separate venv
+- For FLUX model: user needs HuggingFace login + license acceptance
